@@ -1,20 +1,21 @@
-/* eslint-disable no-empty */
 module.exports = {
   name: 'Translate',
   section: 'Other Stuff',
 
-  subtitle(data) {
-    return `Translate to [${data.translateTo}]`;
+  subtitle (data) {
+    return `Translate to [${data.translateTo}]`
   },
 
-  variableStorage(data, varType) {
-    if (parseInt(data.storage, 10) !== varType) return;
-    return [data.varName, 'String'];
+  variableStorage (data, varType) {
+    const type = parseInt(data.storage)
+    if (type !== varType) return
+    const dataType = 'Translated String'
+    return ([data.varName, dataType])
   },
 
   fields: ['translateTo', 'translateMessage', 'storage', 'varName'],
 
-  html(_isEvent, data) {
+  html (isEvent, data) {
     return `
 <div style="width: 30%;">
   Translate to:<br>
@@ -24,7 +25,7 @@ module.exports = {
   Translate Message:<br>
   <textarea id="translateMessage" rows="9" placeholder="Insert message that you want to translate here..." style="width: 99%; font-family: monospace; white-space: nowrap; resize: none;"></textarea>
 </div>
-<div style="padding-top: 30px;">
+<div stlye="padding-top: 30px;">
   <div style="float: left; width: 35%;">
     Store In:<br>
     <select id="storage" class="round" onchange="glob.variableChange(this, 'varNameContainer')">
@@ -35,36 +36,37 @@ module.exports = {
     Variable Name:<br>
     <input id="varName" class="round" type="text">
   </div>
-</div>`;
+</div>`
   },
 
-  init() {
-    const { glob, document } = this;
-    glob.variableChange(document.getElementById('storage'), 'varNameContainer');
+  init () {
+    const { glob, document } = this
+
+    glob.variableChange(document.getElementById('storage'), 'varNameContainer')
   },
 
-  async action(cache) {
-    const data = cache.actions[cache.index];
-    const translateTo = this.evalMessage(data.translateTo, cache);
-    const translateMessage = this.evalMessage(data.translateMessage, cache);
-    const storage = parseInt(data.storage, 10);
-    const varName = this.evalMessage(data.varName, cache);
+  async action (cache) {
+    const data = cache.actions[cache.index]
+    const translateTo = this.evalMessage(data.translateTo, cache)
+    const translateMessage = this.evalMessage(data.translateMessage, cache)
+    const storage = parseInt(data.storage)
+    const varName = this.evalMessage(data.varName, cache)
 
-    const Mods = this.getMods();
-    const translate = Mods.require('node-google-translate-skidz');
+    if (!translateTo || translateTo.length > 2) return console.log('Translate to can only be 2 letters.')
+    if (!translateMessage) return console.log('You need to write something to translate.')
 
-    if (!translateTo || translateTo.length > 2) return console.log('Translate to can only be 2 letters.');
-    if (!translateMessage) return console.log('You need to write something to translate.');
+    const Mods = this.getMods()
+    const translate = Mods.require('node-google-translate-skidz')
 
-    let result;
+    let result
     try {
-      const { translation } = await translate(translateMessage, translateTo);
-      result = translation;
+      const { translation } = await translate(translateMessage, translateTo)
+      result = translation
     } catch {}
 
-    if (result) this.storeValue(result, storage, varName, cache);
-    this.callNextAction(cache);
+    if (result) this.storeValue(result, storage, varName, cache)
+    this.callNextAction(cache)
   },
 
-  mod() {},
-};
+  mod () {}
+}

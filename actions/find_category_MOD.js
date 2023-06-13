@@ -2,19 +2,20 @@ module.exports = {
   name: 'Find Category',
   section: 'Channel Control',
 
-  subtitle(data) {
-    const info = ['Category ID', 'Category Name', 'Category Topic'];
-    return `Find Category by ${info[parseInt(data.info, 10)]}`;
+  subtitle (data) {
+    const info = ['Category ID', 'Category Name', 'Category Topic']
+    return `Find Category by ${info[parseInt(data.info)]}`
   },
 
-  variableStorage(data, varType) {
-    if (parseInt(data.storage, 10) !== varType) return;
-    return [data.varName, 'Category'];
+  variableStorage (data, varType) {
+    const type = parseInt(data.storage)
+    if (type !== varType) return
+    return ([data.varName, 'Category'])
   },
 
   fields: ['info', 'find', 'storage', 'varName'],
 
-  html(isEvent, data) {
+  html (isEvent, data) {
     return `
 <div>
   <div style="float: left; width: 40%;">
@@ -43,9 +44,10 @@ module.exports = {
 </div><br><br><br>
 <p>You can store and edit a category using the channel actions "Store Channel Info", "Edit Channel" or "Set Channel Permission".</p>
 
-<!-- Don't forget to copy the style below with the html above!-->
+<!-- Don't forget to copy the style below with the html above!
+This was made by EliteArtz!-->
 <style>
-  /* Embed CSS code */
+  /* EliteArtz Embed CSS code */
   .embed {
     position: relative;
   }
@@ -83,38 +85,41 @@ module.exports = {
   span.wrexlink:hover {
     color:#4676b9;
   }
-</style>`;
+</style>`
   },
 
-  init() {},
+  init () {},
 
-  action(cache) {
-    const { server } = cache;
-    if (!server || !server.channels) return this.callNextAction(cache);
-    const data = cache.actions[cache.index];
-    const info = parseInt(data.info, 10);
-    const find = this.evalMessage(data.find, cache);
-    const channels = server.channels.cache.filter((s) => s.type === 'category');
-    let result;
-
+  action (cache) {
+    const { server } = cache
+    if (!server || !server.channels) {
+      this.callNextAction(cache)
+      return
+    }
+    const data = cache.actions[cache.index]
+    const info = parseInt(data.info)
+    const find = this.evalMessage(data.find, cache)
+    const channels = server.channels.cache.filter((s) => s.type === 'category')
+    let result
     switch (info) {
       case 0:
-        result = channels.get(find);
-        break;
+        result = channels.get(find)
+        break
       case 1:
-        result = channels.find((e) => e.name === find);
-        break;
+        result = channels.find((e) => e.name === find)
+        break
       default:
-        break;
+        break
     }
-
     if (result !== undefined) {
-      const storage = parseInt(data.storage, 10);
-      const varName = this.evalMessage(data.varName, cache);
-      this.storeValue(result, storage, varName, cache);
+      const storage = parseInt(data.storage)
+      const varName = this.evalMessage(data.varName, cache)
+      this.storeValue(result, storage, varName, cache)
+      this.callNextAction(cache)
+    } else {
+      this.callNextAction(cache)
     }
-    this.callNextAction(cache);
   },
 
-  mod() {},
-};
+  mod () {}
+}

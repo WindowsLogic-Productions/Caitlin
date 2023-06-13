@@ -2,18 +2,20 @@ module.exports = {
   name: 'Generate Random Emoji',
   section: 'Other Stuff',
 
-  subtitle() {
-    return "Generate emoji's";
+  subtitle (data) {
+    return "Generate emoji's"
   },
 
-  variableStorage(data, varType) {
-    if (parseInt(data.storage, 10) !== varType) return;
-    return [data.varName, 'Text'];
+  variableStorage (data, varType) {
+    const type = parseInt(data.storage)
+    if (type !== varType) return
+    const dataType = 'Text'
+    return ([data.varName, dataType])
   },
 
   fields: ['storage', 'varName'],
 
-  html(isEvent, data) {
+  html (isEvent, data) {
     return `
 <div style="padding-top: 8px;">
   <div id="varNameContainer" style="float: right; width: 60%;">
@@ -26,22 +28,22 @@ module.exports = {
       ${data.variables[1]}
     </select>
   </div>
-</div>`;
+</div>`
   },
 
-  init() {},
+  init () {},
 
-  action(cache) {
-    const data = cache.actions[cache.index];
-    const storage = parseInt(data.storage, 10);
-    const varName = this.evalMessage(data.varName, cache);
-    const Mods = this.getMods();
-    const emoji = Mods.require('node-emoji');
+  action (cache) {
+    const data = cache.actions[cache.index]
+    const storage = parseInt(data.storage)
+    const varName = this.evalMessage(data.varName, cache)
 
-    const res = emoji.random();
-    this.storeValue(res.emoji, storage, varName, cache);
-    this.callNextAction(cache);
+    const Mods = this.getMods()
+    const emoji = Mods.require('node-emoji')
+    const res = emoji.random()
+    this.storeValue(res.emoji, storage, varName, cache)
+    this.callNextAction(cache)
   },
 
-  mod() {},
-};
+  mod () {}
+}

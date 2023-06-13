@@ -4,13 +4,13 @@ module.exports = {
 
   requiresAudioLibraries: true,
 
-  subtitle(data) {
-    return `${data.url}`;
+  subtitle (data) {
+    return `${data.url}`
   },
 
-  fields: ['url', 'seek', 'volume', 'passes', 'bitrate', 'maxvid'],
+  fields: ['url', 'apikey', 'seek', 'volume', 'passes', 'bitrate'],
 
-  html() {
+  html (isEvent, data) {
     return `
 <div style="float: left; width: 105%;">
   YouTube Playlist:<br>
@@ -21,82 +21,82 @@ module.exports = {
   <input id="seek" class="round" type="text" value="0"><br>
   Video Volumes:<br>
   <input id="volume" class="round" type="text" placeholder="Leave blank for automatic..."><br>
-    Max Videos to Queue from Playlist:<br>
-    <input id="maxvid" class="round" type="text" placeholder="Defaults to 250 videos"><br>
 </div>
 <div style="float: right; width: 49%;">
   Video Passes:<br>
   <input id="passes" class="round" type="text" value="1"><br>
   Video Bitrates:<br>
   <input id="bitrate" class="round" type="text" placeholder="Leave blank for automatic..."><br>
-</div>`;
+</div>`
   },
 
-  init() {},
+  init () {},
 
-  action(cache) {
-    const data = cache.actions[cache.index];
-    const { Audio } = this.getDBM();
-    const Mods = this.getMods();
-    const url = this.evalMessage(data.url, cache);
-    const maxvideos = this.evalMessage(data.maxvid, cache) || 250;
-    const ytpl = Mods.require('ytpl'); // be sure you have the latest YTPL, this was modified with 2.0.3 in mind
-    const { msg } = cache;
-    const options = {
-      watermark: 'highWaterMark: 1', // idk what this does, but the queue data has it, so i might as well add it in case someone needs it
-    };
+  action (cache) {
+    const data = cache.actions[cache.index]
+    const { Audio } = this.getDBM()
+    const Mods = this.getMods()
+    const url = this.evalMessage(data.url, cache)
+    const ytpl = Mods.require('ytpl')
+    // const moment = Mods.require('moment')
+    const { msg } = cache
+    const options = {}
+
+    // const re = new RegExp('(^[0-9]?[0-9]:[0-9][0-9]:[0-9][0-9]$)')
+    // const re1 = new RegExp('(^[0-9]?[0-9]:[0-9][0-9]$)')
 
     // Check Input
     if (!url) {
-      return console.log('Please insert a playlist url!');
+      return console.log('Please insert a playlist url!')
     }
 
     // Check Options
     if (data.seek) {
-      options.seek = parseInt(this.evalMessage(data.seek, cache), 10);
+      options.seek = parseInt(this.evalMessage(data.seek, cache))
     }
     if (data.volume) {
-      options.volume = parseInt(this.evalMessage(data.volume, cache), 10) / 100;
+      options.volume = parseInt(this.evalMessage(data.volume, cache)) / 100
     } else if (cache.server) {
-      options.volume = Audio.volumes[cache.server.id] || 0.5;
+      options.volume = Audio.volumes[cache.server.id] || 0.5
     } else {
-      options.volume = 0.5;
+      options.volume = 0.5
     }
     if (data.passes) {
-      options.passes = parseInt(this.evalMessage(data.passes, cache), 10);
+      options.passes = parseInt(this.evalMessage(data.passes, cache))
     }
     if (data.bitrate) {
-      options.bitrate = parseInt(this.evalMessage(data.bitrate, cache), 10);
+      options.bitrate = parseInt(this.evalMessage(data.bitrate, cache))
     } else {
-      options.bitrate = 'auto';
+      options.bitrate = 'auto'
     }
     if (msg) {
-      options.requester = msg.author;
+      options.requester = msg.author
     }
-    ytpl(url, { limit: maxvideos }).then((playlist) => {
-      playlist.items.forEach((video) => {
+
+    ytpl(url, function (err, playlist) {
+      if (err) return this.displayError(data, cache, err)
+
+      playlist.items.forEach(function (video) {
+        /* // This functionality is broken from going into the queue and i have 0 idea why thats happening. I left everything here in case someone figures it out in the future.
+let duration
+if (re.test(video.duration)) {
+duration = moment.duration(video.duration).asSeconds()
+} else if (re1.test(video.duration)) {
+duration = moment.duration(`00:${video.duration}`).asSeconds()
+} else (console.log('Error with duration in play youtube playlist'))
+
+options.title = video.title
+options.thumbnail = video.thumbnail
+options.duration = duration
+*/
+        const info = ['yt', options, video.url]
         if (video.id !== undefined) {
-          const { title } = video;
-          const duration = parseInt(video.durationSec, 10);
-          const thumbnail = video.bestThumbnail.url;
-          Audio.addToQueue(
-            [
-              'yt',
-              {
-                ...options,
-                title,
-                duration,
-                thumbnail,
-              },
-              video.shortUrl,
-            ],
-            cache,
-          );
+          Audio.addToQueue(info, cache)
         }
-      });
-    });
-    this.callNextAction(cache);
+      })
+    })
+    this.callNextAction(cache)
   },
 
-  mod() {},
-};
+  mod () {}
+}

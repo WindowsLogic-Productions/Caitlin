@@ -2,18 +2,19 @@ module.exports = {
   name: 'Convert To World Time',
   section: 'Other Stuff',
 
-  subtitle() {
-    return 'Input a timezone and retrieve its current time.';
+  subtitle (data) {
+    return 'Input a timezone and retrieve its current time.'
   },
 
-  variableStorage(data, varType) {
-    if (parseInt(data.storage, 10) !== varType) return;
-    return [data.varName, 'Time'];
+  variableStorage (data, varType) {
+    const type = parseInt(data.storage)
+    if (type !== varType) return
+    return ([data.varName, 'Time'])
   },
 
   fields: ['textbox', 'info', 'storage', 'varName'],
 
-  html(_isEvent, data) {
+  html (isEvent, data) {
     return `
 <div>
   <div style="width: 90%;">
@@ -32,24 +33,22 @@ module.exports = {
     Variable Name:<br>
     <input id="varName" class="round" type="text">
   </div>
-</div>`;
+</div>`
   },
 
-  init() {},
+  init () {},
 
-  action(cache) {
-    const data = cache.actions[cache.index];
-    const Mods = this.getMods();
-    const moment = Mods.require('moment-timezone');
-    const str = this.evalMessage(data.textbox, cache);
-
-    const timec = moment().tz(str).format('dddd, MMMM Do YYYY, h:mm:ss a');
-
-    const storage = parseInt(data.storage, 10);
-    const varName = this.evalMessage(data.varName, cache);
-    this.storeValue(timec, storage, varName, cache);
-    this.callNextAction(cache);
+  action (cache) {
+    const data = cache.actions[cache.index]
+    const Mods = this.getMods()
+    const moment = Mods.require('moment-timezone')
+    const str = this.evalMessage(data.textbox, cache)
+    const timec = moment().tz(str).format('dddd, MMMM Do YYYY, h:mm:ss a')
+    const storage = parseInt(data.storage)
+    const varName = this.evalMessage(data.varName, cache)
+    this.storeValue(timec, storage, varName, cache)
+    this.callNextAction(cache)
   },
 
-  mod() {},
-};
+  mod () {}
+}

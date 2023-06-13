@@ -1,0 +1,47 @@
+8ball [;8ball {question}]
+A magic 8 ball that answers your questions.
+
+6323003 [;6323003]
+Reference to the Orchestral Manoeuvres in the Dark song, Red Frame / White Light.
+
+Desu [;desu]
+Provides a link to "Desu Desu Desu 10 Hours".
+
+Kiss [;kiss {@member}]
+Kiss a specified member on the lips.
+
+Cuddle [;cuddle {@member}]
+Cuddle a specified member.
+
+Pet [;pet {@member}]
+Pet a specified member.
+
+Ship [;ship {@member1} {@member2}]
+Pair yourself with a specified member to get a percentage on how much you belong together.
+
+Butterflies [;butterflies {@member}]
+See how horny a specified member is.
+
+OwO [;owo {sentence}]
+OwOify any sentence.
+
+Dice [;dice {sides}]
+Roll a dice with however many sides you want. Perfect for any game.
+
+Trump [;trump]
+Retrieves a random quote from Donald Trump.
+
+Bean [;bean {@member} {fake reason}]
+Pretend to ban a member with a fake reason.
+
+Let Me Google That For You [;lmgtfy {parameters}]
+Google something for someone.
+
+Cat [;cat]
+Send a random cat image.
+
+Dog [;dog]
+Send a random dog image.
+
+Dog Fact [;dogfact]
+Send a random fact about dogs.

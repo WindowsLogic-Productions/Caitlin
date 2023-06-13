@@ -2,17 +2,19 @@ module.exports = {
   name: 'Find Text',
   section: 'Other Stuff',
 
-  subtitle(data) {
-    return `Find "${data.wordtoFind}"`;
+  subtitle (data) {
+    return `Find "${data.wordtoFind}"`
   },
 
-  variableStorage(data, varType) {
-    if (parseInt(data.storage, 10) !== varType) return;
-    return [data.varName, 'Number'];
+  variableStorage (data, varType) {
+    const type = parseInt(data.storage)
+    if (type !== varType) return
+    const dataType = 'Number'
+    return ([data.varName, dataType])
   },
   fields: ['text', 'wordtoFind', 'position', 'storage', 'varName'],
 
-  html(_isEvent, data) {
+  html (isEvent, data) {
     return `
 <div style="float: left; width: 65%; padding-top: 8px;">
   Text to Find:
@@ -46,44 +48,40 @@ module.exports = {
   If you choose <b>Position at Start</b>, it will find the position of the first character of your text.
   <b>Example</b>: We search word "a" | <u>This is<b> *</b>a<b>- </b>test</u> | * is the start (8) | - is the end (9)
   </p>
-</div>`;
+</div>`
   },
 
-  init() {
-    const { glob, document } = this;
-    glob.variableChange(document.getElementById('storage'), 'varNameContainer');
+  init () {
+    const { glob, document } = this
+
+    glob.variableChange(document.getElementById('storage'), 'varNameContainer')
   },
 
-  action(cache) {
-    const data = cache.actions[cache.index];
-    const text = this.evalMessage(data.text, cache);
-    const wordToFind = this.evalMessage(data.wordtoFind, cache);
-    const position = parseInt(data.position, 10);
+  action (cache) {
+    const data = cache.actions[cache.index]
+    const text = this.evalMessage(data.text, cache)
+    const wordtoFind = this.evalMessage(data.wordtoFind, cache)
+    const position = parseInt(data.position)
 
-    if (!wordToFind) return console.log('Find Text MOD: Text to find is missing!');
-    if (!text) return console.log('Find Text MOD: Source text is missing!');
-    if (!text.includes(wordToFind))
-      console.log(
-        `Find Text MOD: The requested text wasn't found in the source text!\nSource text: ${text}\nText to find: ${wordToFind}`,
-      );
+    if (!wordtoFind) return console.log('Find Text MOD: Text to find is missing!')
+    if (!text) return console.log('Find Text MOD: Source text is missing!')
+    if (!text.includes(wordtoFind)) { console.log(`Find Text MOD: The requested text wasn't found in the source text!\nSource text: ${text}\nText to find: ${wordtoFind}`) }
 
-    let result;
+    let result
     switch (position) {
       case 0:
-        result = text.indexOf(wordToFind);
-        break;
+        result = text.indexOf(wordtoFind)
+        break
       case 1:
-        result = wordToFind.length + text.indexOf(wordToFind);
-        break;
-      default:
-        break;
+        result = wordtoFind.length + text.indexOf(wordtoFind)
+        break
     }
 
-    const storage = parseInt(data.storage, 10);
-    const varName = this.evalMessage(data.varName, cache);
-    this.storeValue(result, storage, varName, cache);
-    this.callNextAction(cache);
+    const storage = parseInt(data.storage)
+    const varName = this.evalMessage(data.varName, cache)
+    this.storeValue(result, storage, varName, cache)
+    this.callNextAction(cache)
   },
 
-  mod() {},
-};
+  mod () {}
+}
